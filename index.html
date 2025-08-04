@@ -120,10 +120,10 @@
             // --- HÄR KOMMER BACKEND-ANROPET ATT SKE ---
             // Just nu använder vi en "dummy"-funktion som simulerar ett svar
             // för att testa att gränssnittet fungerar.
-            mockApiCall(inputText)
-                .then(data => {
-                    displayResults(data);
-                })
+          apiCall(inputText)
+    .then(data => {
+        displayResults(data);
+    })
                 .catch(error => {
                     alert('Något gick fel: ' + error.message);
                 })
