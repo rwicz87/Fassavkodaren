@@ -140,20 +140,24 @@
             resultsContainer.style.display = 'block';
         }
 
-        // Dummy API-funktion som simulerar ett anrop till vår backend
-        function mockApiCall(text) {
-            console.log("Simulerar API-anrop med text:", text);
-            return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    // Detta är ett exempel på hur ett svar från Gemini KAN se ut
-                    const mockResponse = {
-                        translation: "Exempril är en medicin för dig som känner dig omotiverat trött. 'Dyspepsi' betyder helt enkelt att du kan få ont i magen. 'Kontraindikationer' är situationer där du absolut inte ska ta medicinen, som om du är allergisk.",
-                        critique: "Varningsflaggor: Texten är fiktiv. I en verklig studie skulle man behöva ifrågasätta den luddiga diagnosen 'idiopatisk trötthet' och den subjektiva biverkningen 'spontan glädje'. En studie finansierad av tillverkaren skulle också vara en stor varningsflagga."
-                    };
-                    resolve(mockResponse);
-                }, 2500); // Simulerar 2.5 sekunders väntetid
-            });
+      // RIKTIG API-funktion som anropar din live-backend
+function apiCall(text) {
+    const apiUrl = 'https://fassavkodaren.vercel.app/api/avkodare'; // DIN RIKTIGA LÄNK HÄR
+
+    return fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ medText: text }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw new Error(err.error) });
         }
+        return response.json();
+    });
+}
     </script>
 </body>
 </html>
