@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="sv" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fass-avkodaren</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"/>
+    
+    <style>
+        :root {
+            --pico-font-size: 105%;
+        }
+        body {
+            padding: 2rem 1rem;
+        }
+        main.container {
+            max-width: 800px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            margin-bottom: 0.25rem;
+        }
+        header p {
+            color: var(--pico-secondary);
+            font-size: 1.1rem;
+        }
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        button {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.2rem;
+        }
+        #results-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid var(--pico-primary-border);
+            border-radius: var(--pico-border-radius);
+            display: none; /* Dold från början */
+        }
+        .result-section h3 {
+            border-bottom: 2px solid var(--pico-primary);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .spinner {
+            display: none; /* Dold från början */
+            width: 100%;
+            text-align: center;
+            font-size: 1.1rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+        <header>
+            <h1>Fass-avkodaren 🤖</h1>
+            <p>Från medicinsk goja till ren svenska.</p>
+        </header>
+
+        <form id="avkodare-form">
+            <label for="med-text">
+                Klistra in text från FASS eller en länk till en medicinsk studie
+            </label>
+            <textarea id="med-text" name="med-text" placeholder="Klistra in din text här..." required></textarea>
+            <button type="submit">Avkoda texten</button>
+        </form>
+
+        <div class="spinner" id="loading-spinner">
+            <article aria-busy="true">Analyserar med Gemini... vänligen vänta.</article>
+        </div>
+
+        <section id="results-container">
+            <article>
+                <div class="result-section" id="translation-section">
+                    <h3>Vad det betyder för dig:</h3>
+                    <p id="translation-output"></p>
+                </div>
+                <hr>
+                <div class="result-section" id="critique-section">
+                    <h3>Vad du bör vara vaksam på:</h3>
+                    <p id="critique-output"></p>
+                </div>
+            </article>
+        </section>
+
+    </main>
+
+    <script>
+        // Hämta elementen från sidan
+        const form = document.getElementById('avkodare-form');
+        const textInput = document.getElementById('med-text');
+        const resultsContainer = document.getElementById('results-container');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const translationOutput = document.getElementById('translation-output');
+        const critiqueOutput = document.getElementById('critique-output');
+
+        // Lyssna efter att formuläret skickas
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Förhindra att sidan laddas om
+
+            const inputText = textInput.value;
+            if (inputText.trim() === '') {
+                alert('Textrutan kan inte vara tom.');
+                return;
+            }
+
+            // Visa laddnings-spinner och dölj gamla resultat
+            loadingSpinner.style.display = 'block';
+            resultsContainer.style.display = 'none';
+            
+            // --- HÄR KOMMER BACKEND-ANROPET ATT SKE ---
+            // Just nu använder vi en "dummy"-funktion som simulerar ett svar
+            // för att testa att gränssnittet fungerar.
+            mockApiCall(inputText)
+                .then(data => {
+                    displayResults(data);
+                })
+                .catch(error => {
+                    alert('Något gick fel: ' + error.message);
+                })
+                .finally(() => {
+                    // Dölj laddnings-spinner när allt är klart
+                    loadingSpinner.style.display = 'none';
+                });
+        });
+        
+        // Funktion för att visa resultaten
+        function displayResults(data) {
+            translationOutput.innerText = data.translation;
+            critiqueOutput.innerText = data.critique;
+            resultsContainer.style.display = 'block';
+        }
+
+        // Dummy API-funktion som simulerar ett anrop till vår backend
+        function mockApiCall(text) {
+            console.log("Simulerar API-anrop med text:", text);
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // Detta är ett exempel på hur ett svar från Gemini KAN se ut
+                    const mockResponse = {
+                        translation: "Exempril är en medicin för dig som känner dig omotiverat trött. 'Dyspepsi' betyder helt enkelt att du kan få ont i magen. 'Kontraindikationer' är situationer där du absolut inte ska ta medicinen, som om du är allergisk.",
+                        critique: "Varningsflaggor: Texten är fiktiv. I en verklig studie skulle man behöva ifrågasätta den luddiga diagnosen 'idiopatisk trötthet' och den subjektiva biverkningen 'spontan glädje'. En studie finansierad av tillverkaren skulle också vara en stor varningsflagga."
+                    };
+                    resolve(mockResponse);
+                }, 2500); // Simulerar 2.5 sekunders väntetid
+            });
+        }
+    </script>
+</body>
+</html>
