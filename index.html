@@ -11,22 +11,37 @@
         :root {
             --pico-font-size: 105%;
         }
+
+        /* ======================= NY KOD FÖR BAKGRUNDSBILD ======================= */
         body {
-            padding: 2rem 1rem;
+            /* BYT UT LÄNKEN NEDAN MOT DEN TILL DIN BAKGRUNDSBILD */
+            background-image: url(https://github.com/rwicz87/Fassavkodaren/blob/main/backgr.jpg?raw=true'
+            );
+            
+            background-size: cover;       /* Täck hela ytan */
+            background-position: center;  /* Centrera bilden */
+            background-repeat: no-repeat; /* Upprepa inte bilden */
+            background-attachment: fixed; /* Lås bilden vid scroll */
         }
+        
         main.container {
             max-width: 800px;
+            /* NY KOD FÖR GENOMSKINLIG BAKGRUND PÅ INNEHÅLLET */
+            background-color: rgba(27, 32, 40, 0.85); /* Mörk, halvgenomskinlig bakgrund */
+            padding: 2rem;
+            border-radius: var(--pico-border-radius);
+            margin-top: 3rem;
+            backdrop-filter: blur(5px); /* Suddar bakgrunden lite bakom rutan */
         }
+        /* ======================================================================= */
+
         header {
             text-align: center;
             margin-bottom: 2rem;
         }
-        h1 {
-            margin-bottom: 0.25rem;
-        }
-        header p {
-            color: var(--pico-secondary);
-            font-size: 1.1rem;
+        .logo {
+            width: 100px; /* Ändra storleken här om du vill */
+            height: auto;
         }
         textarea {
             min-height: 200px;
@@ -42,7 +57,7 @@
             padding: 1.5rem;
             border: 1px solid var(--pico-primary-border);
             border-radius: var(--pico-border-radius);
-            display: none; /* Dold från början */
+            display: none; 
         }
         .result-section h3 {
             border-bottom: 2px solid var(--pico-primary);
@@ -50,7 +65,7 @@
             margin-bottom: 1rem;
         }
         .spinner {
-            display: none; /* Dold från början */
+            display: none;
             width: 100%;
             text-align: center;
             font-size: 1.1rem;
@@ -62,9 +77,8 @@
 <body>
     <main class="container">
         <header>
-            <h1>Fass-avkodaren 🤖</h1>
-            <p>Från medicinsk goja till ren svenska.</p>
-        </header>
+            <img src="https://github.com/rwicz87/Fassavkodaren/blob/main/logo2.jpg?raw=true" alt="Fass-avkodaren Logotyp" class="logo">
+            </header>
 
         <form id="avkodare-form">
             <label for="med-text">
@@ -95,7 +109,7 @@
     </main>
 
     <script>
-        // Hämta elementen från sidan
+        // JavaScript-koden är oförändrad.
         const form = document.getElementById('avkodare-form');
         const textInput = document.getElementById('med-text');
         const resultsContainer = document.getElementById('results-container');
@@ -103,61 +117,49 @@
         const translationOutput = document.getElementById('translation-output');
         const critiqueOutput = document.getElementById('critique-output');
 
-        // Lyssna efter att formuläret skickas
         form.addEventListener('submit', function(event) {
-            event.preventDefault(); // Förhindra att sidan laddas om
-
+            event.preventDefault(); 
             const inputText = textInput.value;
             if (inputText.trim() === '') {
                 alert('Textrutan kan inte vara tom.');
                 return;
             }
-
-            // Visa laddnings-spinner och dölj gamla resultat
             loadingSpinner.style.display = 'block';
             resultsContainer.style.display = 'none';
-            
-            // --- HÄR KOMMER BACKEND-ANROPET ATT SKE ---
-            // Just nu använder vi en "dummy"-funktion som simulerar ett svar
-            // för att testa att gränssnittet fungerar.
-          apiCall(inputText)
-    .then(data => {
-        displayResults(data);
-    })
+            apiCall(inputText)
+                .then(data => {
+                    displayResults(data);
+                })
                 .catch(error => {
                     alert('Något gick fel: ' + error.message);
                 })
                 .finally(() => {
-                    // Dölj laddnings-spinner när allt är klart
                     loadingSpinner.style.display = 'none';
                 });
         });
         
-        // Funktion för att visa resultaten
         function displayResults(data) {
             translationOutput.innerText = data.translation;
             critiqueOutput.innerText = data.critique;
             resultsContainer.style.display = 'block';
         }
 
-      // RIKTIG API-funktion som anropar din live-backend
-function apiCall(text) {
-    const apiUrl = 'https://fassavkodaren.vercel.app/api/avkodare'; // DIN RIKTIGA LÄNK HÄR
-
-    return fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ medText: text }),
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(err => { throw new Error(err.error) });
+        function apiCall(text) {
+            const apiUrl = 'https://fassavkodaren.vercel.app/api/avkodare'; 
+            return fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ medText: text }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || 'Okänt serverfel') });
+                }
+                return response.json();
+            });
         }
-        return response.json();
-    });
-}
     </script>
 </body>
 </html>
